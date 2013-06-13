@@ -6,7 +6,7 @@ iso = {
 session = {
   :boot_cmd_sequence =>
   [
-   '<Enter>', '<Wait>'*15,
+   '<Enter>', '<Wait>'*30,
    'root',                                              '<Enter>',
    'fdisk /dev/sda',                                    '<Enter>',
    'n',                                                 '<Enter>'*5,
@@ -19,6 +19,7 @@ session = {
    'mkdir -p /mnt/etc/nixos &&',                        '<Enter>',
    'mv configuration.nix /mnt/etc/nixos &&',            '<Enter>',
    'nixos-install &&',                                  '<Enter>',
+   'sleep 5 &&',                                        '<Enter>',
    'reboot',                                            '<Enter>'
   ],
   :boot_wait            => '5',
