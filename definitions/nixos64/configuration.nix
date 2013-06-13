@@ -1,11 +1,15 @@
 { config, pkgs, ... }:
 {
-  require = [ <nixos/modules/installer/scan/not-detected.nix> ];
+  require = [ <nixos/modules/installer/scan/not-detected.nix> 
+              ];
   boot = {
     initrd.kernelModules = [ "ata_piix" "ahci" ];
     loader.grub.device   = "/dev/sda";
   };
-  environment.systemPackages = with pkgs; [ git gnumake gcc ];
+  environment.systemPackages = with pkgs; 
+  [ 
+    git gnumake gcc ocaml which
+  ];
   fileSystems = [ { mountPoint = "/"; label = "nixos"; } ];
   security.sudo.configFile =
     ''
