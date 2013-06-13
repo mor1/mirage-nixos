@@ -16,7 +16,7 @@ ISOVER = nixos-minimal-0.2pre4761_4a40a1f-c9208b9
 ISO = $(ISOVER)-x86_64-linux.iso
 URL = http://nixos.org/releases/nixos/$(subst minimal-,,$(ISOVER))/$(ISO)
 
-.PHONY: configure isos/$(ISO) distclean build
+.PHONY: configure iso/$(ISO) distclean build
 DEBUG ?= 
 FLAGS ?= 
 
@@ -30,7 +30,7 @@ VEEWEE = bundle exec veewee
 #  && source "$HOME/.rvm/scripts/rvm"
 #  && rvm use 1.9.3@global'
 
-configure: Gemfile isos/$(ISO)
+configure: Gemfile iso/$(ISO)
 
 Gemfile:
 	gem install bundle
@@ -39,13 +39,14 @@ Gemfile:
 	echo 'gem "veewee", "0.3.7"' >> Gemfile
 	bundle
 
-isos/$(ISO):
-	[ ! -d 'isos' ] && mkdir isos ; cd isos ; wget -c $(URL) ; cd ..
+iso/$(ISO):
+	[ ! -d 'iso' ] && mkdir iso ; cd iso ; wget -c $(URL) ; cd ..
 
 build:
 	$(VEEWEE) vbox build 'nixos64' --auto $(FLAGS)
-	$(VEEWEE) vbox validate 'nixos64'
+	# $(VEEWEE) vbox validate 'nixos64'
 	$(VAGRANT) basebox export 'nixos64' --force
+	[ ! -d 'box' ] && mkdir box ; cd box ; mv ../*.box . ; cd ..
 
 distclean:
-	$(RM) -r isos/ Gemfile
+	$(RM) -r iso/ Gemfile
