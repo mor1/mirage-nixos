@@ -1,6 +1,6 @@
 iso = {
-  :file => 'nixos-minimal-0.2pre4735_717dc3b-80bd0dd-x86_64-linux.iso',
-  :md5  => '2ac04ee6da8bb656ad75776f4a6a57a7'
+  :file => 'nixos-minimal-0.2pre4761_4a40a1f-c9208b9-x86_64-linux.iso',
+  :md5  => '0c27290ee9cc5cb218aee1f410c2033f'
 }
 
 session = {
