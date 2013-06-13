@@ -14,6 +14,10 @@ rm -f ~/*.iso
 
 nixos-rebuild --upgrade switch
 
+## install desired packages
+
+nix-env --install opam
+
 # Cleanup any previous generations and delete old packages that can be
 # pruned.
 
