@@ -16,7 +16,7 @@ ISOVER = nixos-minimal-0.2pre4761_4a40a1f-c9208b9
 ISO = $(ISOVER)-x86_64-linux.iso
 URL = http://nixos.org/releases/nixos/$(subst minimal-,,$(ISOVER))/$(ISO)
 
-.PHONY: configure iso/$(ISO) distclean build
+.PHONY: configure iso/$(ISO) distclean build boot ssh
 DEBUG ?= 
 FLAGS ?= 
 
@@ -43,10 +43,18 @@ iso/$(ISO):
 	[ ! -d 'iso' ] && mkdir iso ; cd iso ; wget -c $(URL) ; cd ..
 
 build:
-	$(VEEWEE) vbox build 'nixos64' --auto $(FLAGS)
+	$(VEEWEE) vbox build 'mirage-nixos64' --auto $(FLAGS)
 	# $(VEEWEE) vbox validate 'nixos64'
-	$(VAGRANT) basebox export 'nixos64' --force
+	$(VAGRANT) basebox export 'mirage-nixos64' --force
 	[ ! -d 'box' ] && mkdir box ; cd box ; mv ../*.box . ; cd ..
+	$(VAGRANT) box add mirage-nixos64 ./box/mirage-nixos64.box
+
+boot:
+	mkdir -p data
+	$(VAGRANT) up
+
+ssh:
+	$(VAGRANT) ssh
 
 distclean:
-	$(RM) -r iso/ Gemfile
+	$(RM) -r iso/ box/ Gemfile
