@@ -12,7 +12,8 @@
 # OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-ISOVER = nixos-minimal-0.2pre4761_4a40a1f-c9208b9
+##ISOVER = nixos-minimal-0.2pre4761_4a40a1f-c9208b9
+ISOVER = nixos-minimal-0.2pre4791_ed61371-9dc3599
 ISO = $(ISOVER)-x86_64-linux.iso
 URL = http://nixos.org/releases/nixos/$(subst minimal-,,$(ISOVER))/$(ISO)
 
