@@ -6,9 +6,10 @@
     initrd.kernelModules = [ "ata_piix" "ahci" ];
     loader.grub.device   = "/dev/sda";
   };
+ 
   environment.systemPackages = with pkgs; 
   [ 
-    git gnumake gcc ocaml which
+    git gnumake gcc ocaml which gnum4 ncurses
   ];
   fileSystems = [ { mountPoint = "/"; label = "nixos"; } ];
   security.sudo.configFile =

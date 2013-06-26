@@ -17,19 +17,12 @@ ISOVER = nixos-minimal-0.2pre4791_ed61371-9dc3599
 ISO = $(ISOVER)-x86_64-linux.iso
 URL = http://nixos.org/releases/nixos/$(subst minimal-,,$(ISOVER))/$(ISO)
 
-.PHONY: configure iso/$(ISO) distclean build boot ssh
+.PHONY: configure iso/$(ISO) distclean box boot ssh boxclean
 DEBUG ?= 
 FLAGS ?= 
 
 VAGRANT = bundle exec vagrant
 VEEWEE = bundle exec veewee
-
-# ENVIRONMENT:
-# aenv PATH ~/.rvm/bin
-#  && aenv PATH ~/.rvm/gems/ruby-1.9.3-p125/bin
-#  && [ -s "$HOME/.rvm/scripts/rvm" ]
-#  && source "$HOME/.rvm/scripts/rvm"
-#  && rvm use 1.9.3@global'
 
 configure: Gemfile iso/$(ISO)
 
@@ -43,12 +36,19 @@ Gemfile:
 iso/$(ISO):
 	[ ! -d 'iso' ] && mkdir iso ; cd iso ; wget -c $(URL) ; cd ..
 
-build:
+box:
 	$(VEEWEE) vbox build 'mirage-nixos64' --auto $(FLAGS)
-	# $(VEEWEE) vbox validate 'nixos64'
+	$(VEEWEE) vbox validate 'mirage-nixos64'
+	mkdir -p ./data
+	$(VAGRANT) halt
 	$(VAGRANT) basebox export 'mirage-nixos64' --force
-	[ ! -d 'box' ] && mkdir box ; cd box ; mv ../*.box . ; cd ..
+	mkdir -p ./box && cd box && mv ../*.box . && cd ..
 	$(VAGRANT) box add mirage-nixos64 ./box/mirage-nixos64.box
+
+boxclean:
+	# $(VAGRANT) box remove mirage-nixos64
+	VBoxManage unregistervm --delete mirage-nixos64
+	$(RM) -r box/ 
 
 boot:
 	mkdir -p data

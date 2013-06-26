@@ -63,3 +63,24 @@ Scratchpad
 ## post opam install
 
     . /home/vagrant/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
+
+
+## notes
+
++ shutdown to reboot during install sometimes not clean -- power off VM and restart via gui
+
++ proxies can be configured via 
+    
+    nix.proxy = "http://proxy";
+    
+in `configuration.nix`; and/or via 
+    
+    'export http_proxy="http://proxy" && ', "<Enter>",
+    
+in `definitions.rb`.
+
++ on completion the script just bombs out because ruby/vagrant gets its sockets closed too quickly. appears to be harmless.
+
++ opam install finishes with non-zero error code causes `postinstall.sh` failure
+
++ sometimes the ssh login seems to wedge up waiting for login (dunno why, manual login works just fine)... ?  again, rebooting VM seems to sort it out.
