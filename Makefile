@@ -12,50 +12,42 @@
 # OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-##ISOVER = nixos-minimal-0.2pre4761_4a40a1f-c9208b9
-ISOVER = nixos-minimal-0.2pre4791_ed61371-9dc3599
-ISO = $(ISOVER)-x86_64-linux.iso
-URL = http://nixos.org/releases/nixos/$(subst minimal-,,$(ISOVER))/$(ISO)
+NIXDMG = nix-store.dmg
 
-.PHONY: configure iso/$(ISO) distclean box boot ssh boxclean
-DEBUG ?= 
-FLAGS ?= 
+NIXBIN = nix-1.5.3-x86_64-darwin.tar.bz2
+NIXREV = 5350097
+NIXURL = http://hydra.nixos.org/build/$(NIXREV)/download/1/$(NIXBIN)
 
-VAGRANT = bundle exec vagrant
-VEEWEE = bundle exec veewee
+OPSBIN = nixops-1.0-x86_64-linux.nixpkg
+OPSREV = 5426863
+OPSURL = http://hydra.nixos.org/build/$(OPSREV)/nix/pkg/$(OPSBIN)
 
-configure: Gemfile iso/$(ISO)
+clean:
+	sudo $(RM) -r /nix
+	$(RM) -r ~/.nix-*
 
-Gemfile:
-	gem install bundle
-	bundle init
-	echo 'gem "vagrant", "1.0.7"' >> Gemfile
-	echo 'gem "veewee", "0.3.7"' >> Gemfile
-	bundle
+prepare-dmg: 
+	[ -r "$(NIXDMG)" ] || hdiutil create -size 10G -fs "Case-sensitive HFS+" -volname NixStore $(NIXDMG)
+	sudo mkdir -p /nix
+	sudo chown $$(whoami) /nix
 
-iso/$(ISO):
-	[ ! -d 'iso' ] && mkdir iso ; cd iso ; wget -c $(URL) ; cd ..
+mount-dmg:
+	hdiutil attach $(NIXDMG) -mountpoint /nix
 
-box:
-	$(VEEWEE) vbox build 'mirage-nixos64' --auto $(FLAGS)
-	$(VEEWEE) vbox validate 'mirage-nixos64'
-	mkdir -p ./data
-	$(VAGRANT) halt
-	$(VAGRANT) basebox export 'mirage-nixos64' --force
-	mkdir -p ./box && cd box && mv ../*.box . && cd ..
-	$(VAGRANT) box add mirage-nixos64 ./box/mirage-nixos64.box
+install-nix:
+	[ -r "$(NIXBIN)" ] || curl $(NIXURL)
+	sudo tar xzfvP $(NIXBIN)
+	sudo chown -R $$(whoami) /nix
+	nix-finish-install
+	sudo $(RM) $$(which nix-finish-install)
+	source ~/.nix-profile/etc/profile.d/nix.sh
 
-boxclean:
-	# $(VAGRANT) box remove mirage-nixos64
-	VBoxManage unregistervm --delete mirage-nixos64
-	$(RM) -r box/ 
+update-nix:
+	nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+	nix-channel --update
+	nix-env -i nix
 
-boot:
-	mkdir -p data
-	$(VAGRANT) up
-
-ssh:
-	$(VAGRANT) ssh
-
-distclean:
-	$(RM) -r iso/ box/ Gemfile
+install-nixops:
+	# [ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
+	# nix-env -f nixops -i nixops
+	nix-install-package --non-interactive --url $(OPSURL)
