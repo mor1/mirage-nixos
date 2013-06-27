@@ -1,6 +1,28 @@
 Mirage / NixOS
 ==============
 
+Using `nixops`
+==============
+
+    $ curl http://hydra.nixos.org/build/5350097/download/1/nix-1.5.3-x86_64-darwin.tar.bz2 | sudo tar Pxfj -
+    $ sudo chown -R $(whoami) /nix
+    $ nix-finish-install ## has been installed in /usr/bin
+    $ source ~/.nix-profile/etc/profile.d/nix.sh ## add to profile
+ 
+    $ sudo chown root:staff ~/.nix-profile/libexec/nix-setuid-helper
+    $ sudo chmod 4755 ~/.nix-profile/libexec/nix-setuid-helper
+
+    $ export NIX_REMOTE=daemon ## to not have to run as root   
+    $ nix-daemon & ## necessary to perform root ops in multi-user mode
+
+    $ nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+    $ nix-channel --update
+
+ 
+
+Using Vagrant/Veewee
+====================
+
 VirtualBox NixOS image for Linux-hosted Mirage.
 
 Forked from <https://github.com/dysinger/nixbox> so as to reuse `veewee` definitions file.
