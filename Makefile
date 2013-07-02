@@ -18,12 +18,7 @@ NIXBIN = nix-1.5.3-x86_64-darwin.tar.bz2
 NIXREV = 5350097
 NIXURL = http://hydra.nixos.org/build/$(NIXREV)/download/1/$(NIXBIN)
 
-## no darwin nixpkg yet
-# OPSBIN = nixops-1.0-x86_64-darwin.nixpkg
-# OPSREV = 5426863
-# OPSURL = http://hydra.nixos.org/build/$(OPSREV)/nix/pkg/$(OPSBIN)
-
-all: prepare-dmg mount-dmg install-nix update-nix ## install-nixops
+all: prepare-dmg mount-dmg install-nix ## update-nix ## install-nixops
 
 clean:
 	sudo $(RM) -r /nix
@@ -58,4 +53,9 @@ update-nix:
 
 install-nixops:
 	[ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
-	nix-env -f nixops -i nixops
+	nix-env -i nixops
+
+#...create ~/VirutalBox VMs/vmid?
+
+
+	# export NIX_PATH=/nix/var/nix/profiles/per-user/$(whoami)/channels/nixos
