@@ -18,13 +18,19 @@ NIXBIN = nix-1.5.3-x86_64-darwin.tar.bz2
 NIXREV = 5350097
 NIXURL = http://hydra.nixos.org/build/$(NIXREV)/download/1/$(NIXBIN)
 
-OPSBIN = nixops-1.0-x86_64-linux.nixpkg
-OPSREV = 5426863
-OPSURL = http://hydra.nixos.org/build/$(OPSREV)/nix/pkg/$(OPSBIN)
+## no darwin nixpkg yet
+# OPSBIN = nixops-1.0-x86_64-darwin.nixpkg
+# OPSREV = 5426863
+# OPSURL = http://hydra.nixos.org/build/$(OPSREV)/nix/pkg/$(OPSBIN)
+
+all: prepare-dmg mount-dmg install-nix update-nix ## install-nixops
 
 clean:
 	sudo $(RM) -r /nix
 	$(RM) -r ~/.nix-*
+
+distclean: umount-dmg clean
+	$(RM) $(NIXDMG)
 
 prepare-dmg: 
 	[ -r "$(NIXDMG)" ] || hdiutil create -size 10G -fs "Case-sensitive HFS+" -volname NixStore $(NIXDMG)
@@ -34,20 +40,22 @@ prepare-dmg:
 mount-dmg:
 	hdiutil attach $(NIXDMG) -mountpoint /nix
 
+umount-dmg:
+	hdiutil detach /nix -force || true
+
 install-nix:
-	[ -r "$(NIXBIN)" ] || curl $(NIXURL)
+	[ -r "$(NIXBIN)" ] || curl -o $(NIXBIN) $(NIXURL)
 	sudo tar xzfvP $(NIXBIN)
 	sudo chown -R $$(whoami) /nix
 	nix-finish-install
 	sudo $(RM) $$(which nix-finish-install)
-	source ~/.nix-profile/etc/profile.d/nix.sh
 
 update-nix:
 	nix-channel --add http://nixos.org/channels/nixpkgs-unstable
+	nix-channel --add http://nixos.org/channels/nixos-unstable
 	nix-channel --update
 	nix-env -i nix
 
 install-nixops:
-	# [ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
-	# nix-env -f nixops -i nixops
-	nix-install-package --non-interactive --url $(OPSURL)
+	[ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
+	nix-env -f nixops -i nixops
