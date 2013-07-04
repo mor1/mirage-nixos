@@ -12,13 +12,12 @@
 # OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
 # CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
-NIXDMG = nix-store.dmg
-
+NIXDMG = images/nix-store.dmg
 NIXBIN = nix-1.5.3-x86_64-darwin.tar.bz2
 NIXREV = 5350097
 NIXURL = http://hydra.nixos.org/build/$(NIXREV)/download/1/$(NIXBIN)
 
-all: prepare-dmg mount-dmg install-nix ## update-nix ## install-nixops
+all: install-nix
 
 clean:
 	sudo $(RM) -r /nix
@@ -32,27 +31,37 @@ prepare-dmg:
 	sudo mkdir -p /nix
 	sudo chown $$(whoami) /nix
 
-mount-dmg:
+mount-dmg: prepare-dmg
 	hdiutil attach $(NIXDMG) -mountpoint /nix
 
 umount-dmg:
 	hdiutil detach /nix -force || true
 
-install-nix:
-	[ -r "$(NIXBIN)" ] || curl -o $(NIXBIN) $(NIXURL)
-	sudo tar xzfvP $(NIXBIN)
+install-nix: mount-dmg
+	[ -r "images/$(NIXBIN)" ] || curl -o images/$(NIXBIN) $(NIXURL)
+	sudo tar xzfvP images/$(NIXBIN)
 	sudo chown -R $$(whoami) /nix
 	nix-finish-install
 	sudo $(RM) $$(which nix-finish-install)
 
+	@echo
+	@echo "*** Now execute and/or add to your shell profile:"
+	@echo  source /Users/mort/.nix-profile/etc/profile.d/nix.sh
+	@echo
+
 update-nix:
 	nix-channel --add http://nixos.org/channels/nixpkgs-unstable
 	nix-channel --add http://nixos.org/channels/nixos-unstable
+	nix-channel --add http://hydra.nixos.org/project/nixops/channel/latest
 	nix-channel --update
 	nix-env -i nix
 
+	@echo
+	@echo "*** Now execute and/or add to your shell profile:"
+	@echo  export NIX_PATH=/nix/var/nix/profiles/per-user/$$(whoami)/channels/nixos
+	@echo
+
 install-nixops:
-	[ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
 	nix-env -i nixops
 
 #...create ~/VirutalBox VMs/vmid?
