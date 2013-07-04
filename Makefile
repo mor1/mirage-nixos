@@ -64,7 +64,6 @@ update-nix:
 install-nixops:
 	nix-env -i nixops
 
-#...create ~/VirutalBox VMs/vmid?
-
-
-	# export NIX_PATH=/nix/var/nix/profiles/per-user/$(whoami)/channels/nixos
+install-nixops-dev:
+	[ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
+	cd nixops && nix-build release.nix -A build.x86_64-darwin && nix-env -i $$(readlink result)
