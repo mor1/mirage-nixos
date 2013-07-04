@@ -1,5 +1,11 @@
 .DS_Store
 /Gemfile.lock
+
 /.vagrant
+/nixos
+/nixops
+/images
+
 **/*.iso
 **/*.box
+**/*.dmg
