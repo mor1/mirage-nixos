@@ -66,4 +66,10 @@ install-nixops:
 
 install-nixops-dev:
 	[ -r "nixops" ] || git clone git://github.com/NixOS/nixops.git
-	cd nixops && nix-build release.nix -A build.x86_64-darwin && nix-env -i $$(readlink result)
+	cd nixops \
+	  && nix-build release.nix -A build.x86_64-darwin \
+	  && nix-env -i $$(readlink result)
+
+ports-%: ## stem is `Resource Id` from `nixops info`
+	VBoxManage modifyvm "$*" --natpf1 "ssh,tcp,,2222,,22"
+	VBoxManage modifyvm "$*" --natpf1 "www,tcp,,8080,,80"
