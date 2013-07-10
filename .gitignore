@@ -4,6 +4,7 @@
 /.vagrant
 /nixos
 /nixops
+/nixpkgs
 /images
 
 **/*.iso
