@@ -50,7 +50,6 @@ install-nix: mount-dmg
 	@echo
 
 update-nix:
-	nix-channel --add http://nixos.org/channels/nixpkgs-unstable
 	nix-channel --add http://nixos.org/channels/nixos-unstable
 	nix-channel --add http://hydra.nixos.org/project/nixops/channel/latest
 	nix-channel --update
