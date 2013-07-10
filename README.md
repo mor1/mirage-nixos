@@ -4,22 +4,20 @@ Mirage / NixOS
 follow the makefile:
 
     make distclean
-    make install-nix
-    ## ...then update environment and profile
-    make install-nixops
-    ## ...then update environment and profile
+    make install-nix    ## ...then update environment and profile
+    make install-nixops ## ...then update environment and profile
 
 create a nix deployment
 
     make create-mirage
     make deploy-mirage
+    make ports-mirage
     
 start installing stuff
 
+    make ssh-mirage-www
     rm -rf ~/.opam && opam init --yes
-    . /root/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
-    opam install mirage-www
-
+    . ~/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
 
 findlib:
 wrapping ocamlc in shell script to pass OCAMLFLAGS allows setting libs dir correctly
@@ -32,18 +30,23 @@ wrapping ocamlc in shell script to pass OCAMLFLAGS allows setting libs dir corre
     chmod +x bin/ocamlc
 
     export OCAMLC_FLAGS="-I ~/.nix-profile/lib"
-
     nix-env -i ncurses
-
-
+    opam install --yes ocamlfind
 
 lwt:
 
-    nix-env -i  glibc ## for pthreads
-    export PTHREAD_CFLAGS=-L/root/.nix-profile/lib
-    export PTHREAD_LIB=-L/root/.nix-profile/lib
-
-    export LIBEV_CFLAGS=-L/root/.nix-profile/lib
-    export LIBEV_LIB=-L/root/.nix-profile/lib
-    
+    nix-env -i libev glibc ## for pthreads
+    export C_INCLUDE_PATH=~/.nix-profile/include
+    export LIBRARY_PATH=~/.nix-profile/lib
     opam install --yes conf-libev lwt
+
+mirari:
+note we need custom `obuild` package to tweak `bootstrap` hashbang line
+
+    opam remote add mirage-dev git://github.com/mor1/opam-repository
+    opam install --yes mirari
+
+mirage-www:
+
+    opam install --yes mirage-www
+

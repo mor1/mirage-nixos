@@ -1,11 +1,13 @@
 {
   mirage-www = { pkgs, ... }: {
-    environment.systemPackages = [ 
+   environment.systemPackages = [ 
       pkgs.gnumake
       pkgs.vim
       pkgs.gnum4
       pkgs.gcc
       pkgs.ncurses
+      pkgs.glibc
+      pkgs.libev
       pkgs.xlibs.makedepend
       pkgs.which
       pkgs.curl
