@@ -24,9 +24,9 @@ wrapping ocamlc in shell script to pass OCAMLFLAGS allows setting libs dir corre
 
     mkdir bin
     cat > bin/ocamlc << __EOF
-    > #!/bin/sh
-    > /run/current-system/sw/bin/ocamlc \${OCAMLC_FLAGS} "\$*"
-    > __EOF
+    #!/bin/sh
+    /run/current-system/sw/bin/ocamlc \${OCAMLC_FLAGS} "\$*"
+    __EOF
     chmod +x bin/ocamlc
 
     export OCAMLC_FLAGS="-I ~/.nix-profile/lib"
@@ -49,4 +49,6 @@ note we need custom `obuild` package to tweak `bootstrap` hashbang line
 mirage-www:
 
     opam install --yes mirage-www
+
+...then run `mir-www` and point a browser in the host at <http://localhost:8080> and you should see the mirage website <http://openmirage.org>.
 
