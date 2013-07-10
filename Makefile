@@ -46,7 +46,7 @@ install-nix: mount-dmg
 
 	@echo
 	@echo "*** Now execute and/or add to your shell profile:"
-	@echo  source /Users/mort/.nix-profile/etc/profile.d/nix.sh
+	@echo  source ~/.nix-profile/etc/profile.d/nix.sh
 	@echo
 
 update-nix:
@@ -70,6 +70,24 @@ install-nixops-dev:
 	  && nix-build release.nix -A build.x86_64-darwin \
 	  && nix-env -i $$(readlink result)
 
-ports-%: ## stem is `Resource Id` from `nixops info`
-	VBoxManage modifyvm "$*" --natpf1 "ssh,tcp,,2222,,22"
-	VBoxManage modifyvm "$*" --natpf1 "www,tcp,,8080,,80"
+## configure and manipulate VMs
+
+ports-%: ## stem is VM name; VM must be stopped
+	nixops stop -d $*
+	VBoxManage modifyvm "$$(nixops info --plain -d $* | cut -f 4)" \
+	  --natpf1 "ssh,tcp,,2222,,22"
+	VBoxManage modifyvm "$$(nixops info --plain -d $* | cut -f 4)" \
+	  --natpf1 "www,tcp,,8080,,80"
+
+create-mirage-www:
+	nixops create ./nixes/mirage.nix ./nixes/mirage-vbox.nix -d mirage
+ssh-%:
+	nixops ssh $*
+
+deploy-%:
+	nixops deploy -d $*
+start-%:
+	nixops start -d $*
+stop-%:
+	nixops stop -d $*
+
